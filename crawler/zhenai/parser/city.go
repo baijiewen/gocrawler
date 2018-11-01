@@ -3,6 +3,7 @@ package parser
 import (
 	"regexp"
 	"singlecrawler/crawler/engine"
+	"singlecrawler/crawler/config"
 )
 
 var (
@@ -10,7 +11,7 @@ var (
 	cityUrlRe = regexp.MustCompile(`http://www.zhenai.com/zhenghun/shanghai/[^"]+`)
 )
 
-func ParseCity(contents []byte) engine.ParseResult {
+func ParseCity(contents []byte, _ string) engine.ParseResult {
 	matches := profileRe.FindAllSubmatch(contents, -1)
 	result := engine.ParseResult{}
 	for _, m := range matches {
@@ -18,9 +19,7 @@ func ParseCity(contents []byte) engine.ParseResult {
 		url := string(m[1])
 		result.Requests = append(result.Requests, engine.Request{
 			Url: url,
-			ParserFunc: func(c []byte) engine.ParseResult {
-				return ParseProfile(c, url, name)
-			},
+			Parser: NewProfileParser(name),
 		})
 	}
 
@@ -28,7 +27,7 @@ func ParseCity(contents []byte) engine.ParseResult {
 	for _, m := range matches {
 		result.Requests = append(result.Requests, engine.Request{
 			Url:        string(m[0]),
-			ParserFunc: ParseCity,
+			Parser: engine.NewFuncParser(ParseCity, config.ParseCity),
 		})
 	}
 	return result

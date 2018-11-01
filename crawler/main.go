@@ -5,6 +5,7 @@ import (
 	"singlecrawler/crawler/persist"
 	"singlecrawler/crawler/scheduler"
 	"singlecrawler/crawler/zhenai/parser"
+	"singlecrawler/crawler/config"
 )
 
 func main() {
@@ -17,10 +18,11 @@ func main() {
 		Scheduler:   &scheduler.QueuedScheduler{},
 		WorkerCount: 100,
 		ItemChan:    ItemSaver,
+		RequestProcessor: engine.Worker,
 	}
 
 	e.Run(engine.Request{
 		Url:        "http://www.zhenai.com/zhenghun",
-		ParserFunc: parser.ParseCityList,
+		Parser: engine.NewFuncParser(parser.ParseCityList, config.ParseCityList),
 	})
 }

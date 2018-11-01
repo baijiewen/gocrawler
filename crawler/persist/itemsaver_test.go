@@ -35,7 +35,7 @@ func TestItemSaver(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	err = save(client, profile, index)
+	err = Save(client, profile, index)
 	if err != nil {
 		panic(err)
 	}
